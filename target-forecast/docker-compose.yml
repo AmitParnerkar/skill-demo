@@ -1,0 +1,50 @@
+services:
+  mongodb:
+    image: mongo:6.0        # Use the official MongoDB image
+    container_name: mongodb
+    ports:
+      - "27017:27017"       # Expose MongoDB on port 27017
+    networks:
+      - backend
+    volumes:
+      - mongo_data:/data/db  # Persist MongoDB data in a volume
+    healthcheck:
+      test: [ "CMD", "mongo", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 2
+
+  target-forecast-api:
+    build:
+      context: ./services/api
+    container_name: target-forecast-api
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/product_db
+    depends_on:
+      - mongodb
+    networks:
+      - backend
+
+  target-forecast-integration:
+    build:
+      context: ./services/integration
+    container_name: target-forecast-integration
+    environment:
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/product_db
+    depends_on:
+      - mongodb
+    networks:
+      - backend
+
+networks:
+  backend:
+    external: true
+    name: backend
+
+volumes:
+  mongo_data:
+    driver: local

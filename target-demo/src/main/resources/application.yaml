@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: target-demo
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+logging:
+  level:
+    root: INFO
+server:
+  port: 8080

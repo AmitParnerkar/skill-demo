@@ -1,0 +1,7 @@
+productName,material,dimensions,sku,price,category,productRelationship,inventoryQuantity,sales_quantity
+Plastic Drawer,Plastic,45x40x60 cm,DR101,49.99,Storage,Variation,75,130
+Wooden Bookshelf,Wood,80x30x180 cm,BS205,149.99,Furniture,Standalone,40,90
+Metal Rack,Metal,60x40x160 cm,MR303,89.99,Storage,Standalone,55,110
+Plastic Drawer,Plastic,45x40x60 cm,DR101,49.99,Storage,Variation,75,0
+Plastic Drawer,Plastic,45x40x60 cm,DR101,49.99,Storage,Variation,75,0
+Test Chair,Wood,50x50x90 cm,CH123,79.99,Furniture,Standalone,20,0
