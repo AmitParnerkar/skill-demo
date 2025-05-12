@@ -1,0 +1,6 @@
+cd core
+gradle clean && gradle build --no-daemon
+cd ../services/api
+gradle clean && gradle build --no-daemon
+cd ../integration
+gradle clean && gradle build --no-daemon

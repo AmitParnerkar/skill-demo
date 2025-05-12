@@ -9,15 +9,16 @@ services:
     volumes:
       - mongo_data:/data/db  # Persist MongoDB data in a volume
     healthcheck:
-      test: [ "CMD", "mongo", "--eval", "db.adminCommand('ping')" ]
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping').ok", "--quiet"]      
       interval: 10s
       timeout: 5s
       retries: 2
-
+      start_period: 30s  # Give MongoDB time to initialize
   target-forecast-api:
+    image: paam0101/target-forecast-api:latest
     build:
-      context: ./services/api
-    container_name: target-forecast-api
+      context: .
+      dockerfile: services/api/Dockerfile
     ports:
       - "8082:8082"
     environment:
@@ -29,9 +30,10 @@ services:
       - backend
 
   target-forecast-integration:
+    image: paam0101/target-forecast-integration:latest
     build:
-      context: ./services/integration
-    container_name: target-forecast-integration
+      context: .
+      dockerfile: services/integration/Dockerfile
     environment:
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/product_db

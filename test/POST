@@ -1,0 +1,2 @@
+curl    --location 'localhost:8080/products' \
+        --form 'file=@"./sample_products.xlsx"'
