@@ -59,11 +59,10 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
     depends_on:
       - kafka
-
   target-service:
     build:
       context: .
-    container_name: target-demo
+    container_name: target-service
     ports:
       - "8080:8080"
     networks:
