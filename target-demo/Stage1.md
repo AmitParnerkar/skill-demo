@@ -2,5 +2,5 @@
 docker run \
     -it \
     -v $PWD:/home/gradle \
-    gradle:7.6.4-jdk17-noble \
+    gradle:8.14.0-jdk21-noble \
     bash
