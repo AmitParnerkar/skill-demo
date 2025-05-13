@@ -4,3 +4,12 @@ cd ../services/api
 gradle clean && gradle build --no-daemon
 cd ../integration
 gradle clean && gradle build --no-daemon
+
+#Build it from thr root directory
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  -f services/integration/Dockerfile \
+  -t paam0101/target-forecast-integration \
+  --push \
+  .
+
