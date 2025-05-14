@@ -60,6 +60,7 @@ services:
     depends_on:
       - kafka
   target-service:
+    image: paam0101/target-demo:latest
     build:
       context: .
     container_name: target-service
