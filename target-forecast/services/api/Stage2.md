@@ -1,7 +1,6 @@
 docker run \
     -it \
-    -v /home/cloudgenius/test/skill-demo/target-forecast:/home/gradle \
-    gradle:8.14.0-jdk21-noble \
+    -v $HOME/Clients/spinach/code/skill-demo/target-forecast:/home/gradle \
+    -p 8082:8080 \
+    eclipse-temurin:21 \
     bash
-
-
