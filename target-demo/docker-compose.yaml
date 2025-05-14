@@ -19,7 +19,7 @@ services:
       retries: 5
 
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.2.1
+    image: confluentinc/cp-zookeeper:7.7.1
     ports:
       - "2181:2181"
     networks:
@@ -29,7 +29,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
 
   kafka:
-    image: confluentinc/cp-kafka:7.2.1
+    image: confluentinc/cp-kafka:7.7.1
     ports:
       - "9092:9092"
     networks:
