@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: target-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: target-demo
+  template:
+    metadata:
+      labels:
+        role: target-demo
+    spec:
+      containers:
+        - image: paam0101/target-demo
+          imagePullPolicy: IfNotPresent
+          name: target-dem

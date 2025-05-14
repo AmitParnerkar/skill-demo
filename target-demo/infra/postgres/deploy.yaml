@@ -1,0 +1,57 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  ports:
+    - name: http
+      port: 5432
+      targetPort: 5432  
+  selector:
+    app: postgres
+---
+apiVersion: apps/v1
+kind: deployment
+metadata:
+  name: kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: kafka
+          image: postgres:latest
+          imagePullPolicy: IfNotPresent          
+          ports:
+            - containerPort: 5432
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: user
+            - name: POSTGRES_PASSWORD
+              value: password
+            - name: POSTGRES_DB
+              value: products_db
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgresdata
+      volumes:
+        - name: postgresdata
+          persistentVolumeClaim:
+            claimName: postgres-volume-claim
+
+    # healthcheck:
+    #   test: [ "CMD-SHELL", "pg_isready -U user -d products_db" ]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
+
