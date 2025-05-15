@@ -13,6 +13,16 @@ spec:
         role: target-demo
     spec:
       containers:
-        - image: paam0101/target-demo
-          imagePullPolicy: IfNotPresent
-          name: target-dem
+        - name: target-demo
+          image: paam0101/target-demo:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "docker"
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://postgres:5432/products_db"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "user"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "password"
