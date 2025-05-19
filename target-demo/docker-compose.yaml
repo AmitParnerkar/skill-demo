@@ -1,6 +1,13 @@
 services:
+
+# Network testing container
+  nettools:
+    image: nettools
+    networks:
+      - backend    
+    # docker build -t nettools -f nettools.Dockerfile .
   postgres:
-    image: postgres
+    image: postgres:latest
     container_name: target_postgres
     ports:
       - "5432:5432"
@@ -10,6 +17,7 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: products_db
+      PGDATA: "/var/lib/postgresql/data"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -18,47 +26,52 @@ services:
       timeout: 5s
       retries: 5
 
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.7.1
-    ports:
-      - "2181:2181"
-    networks:
-      - backend
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-
   kafka:
-    image: confluentinc/cp-kafka:7.7.1
+    image: docker.io/bitnami/kafka:4.0
     ports:
-      - "9092:9092"
+      - "9092"
     networks:
-      - backend
+      - backend       
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-    depends_on:
-      - zookeeper
-    healthcheck:
-      test: [ "CMD", "nc", "-z", "localhost", "9092" ]
-      interval: 10s
-      timeout: 5s
-      retries: 10
+      # KRaft settings
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_KRAFT_CLUSTER_ID=abcdefghijklmnopqrstuv
+      # Listeners
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+    # entrypoint: >
+    #   /bin/bash -c "
+    #     apt-get update && 
+    #     apt-get install -y telnet netcat-openbsd lsof net-tools &&
+    #     rm -rf /var/lib/apt/lists/* &&
+    #     exec /opt/bitnami/scripts/kafka/entrypoint.sh"
+    # healthcheck:
+    #   test: [ "CMD", "nc", "-z", "localhost", "9092" ]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 10
+    volumes:
+      - kafka_data:/bitnami/kafka
 
   kafka-ui:
-    image: provectuslabs/kafka-ui
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
     ports:
-      - "8081:8080"
+      - 8081:8080
+    depends_on:
+      - kafka
     networks:
-      - backend
+      - backend       
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
-    depends_on:
-      - kafka
+    # depends_on:
+    #   - kafka
   target-service:
     image: paam0101/target-demo:latest
     build:
@@ -76,8 +89,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      kafka:
-        condition: service_healthy
+      # kafka:
+      #   condition: service_healthy
     restart: on-failure
 
 networks:
@@ -87,4 +100,6 @@ networks:
     
 volumes:
   postgres_data:
+    driver: local
+  kafka_data:
     driver: local
