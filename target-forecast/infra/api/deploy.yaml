@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: target-forecast-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: target-forecast-api
+  template:
+    metadata:
+      labels:
+        role: target-forecast-api
+    spec:
+      containers:
+        - name: target-forecast-api
+          image: paam0101/target-forecast-api:latest
+          ports:
+            - containerPort: 8082
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "docker"
+            - name: SPRING_DATA_MONGODB_URI
+              value: mongodb://mongodb:27017/product_db
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: kafka:9092
+
