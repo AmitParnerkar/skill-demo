@@ -3,6 +3,9 @@ services:
 # Network testing container
   nettools:
     image: nettools
+    build:
+      context: .
+      dockerfile: nettools.Dockerfile
     networks:
       - backend    
     # docker build -t nettools -f nettools.Dockerfile .
