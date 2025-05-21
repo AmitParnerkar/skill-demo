@@ -8,4 +8,4 @@ spec:
       port: 80
       targetPort: 8082
   selector:
-    role: ta
+    role: target-forecast-api
